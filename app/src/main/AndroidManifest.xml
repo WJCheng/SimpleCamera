@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".VideoPlayActivity"/>
+            android:name=".VideoPlayActivity" android:screenOrientation="portrait"/>
     </application>
 
 

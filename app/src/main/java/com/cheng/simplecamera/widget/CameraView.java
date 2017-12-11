@@ -4,19 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.os.Environment;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.cheng.simplecamera.R;
 import com.cheng.simplecamera.VideoPlayActivity;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * CameraView extend from CameraBase which can record video.
@@ -47,9 +43,51 @@ public class CameraView extends CameraBase {
         countDownTask.execute(MAX_VIDEO_LENGTH);
 
         recorder = new MediaRecorder();
+        calcVideoRotation();
         if (!prepareMediaRecorder())
             return;
         recorder.start();
+    }
+
+    protected void calcVideoRotation() {
+        if (camFacing == FACING_BACK) {
+            Log.i(TAG, "calcPictureRotation: back orientation = " + mCameraInfo.orientation);//90
+            if (curScreenRotation == 0) {
+                recorder.setOrientationHint(90);
+            }
+            if (curScreenRotation == 90) {
+                recorder.setOrientationHint(180);
+            }
+            if (curScreenRotation == 180) {
+                recorder.setOrientationHint(270);
+            }
+            if (curScreenRotation == 270) {
+                recorder.setOrientationHint(0);
+            }
+        } else {//Facing Front
+            Log.i(TAG, "calcPictureRotation: front orientation = " + mCameraInfo.orientation);//270
+            if (curScreenRotation == 0) {
+                recorder.setOrientationHint(270);
+            }
+            if (curScreenRotation == 90) {
+                recorder.setOrientationHint(180);
+            }
+            if (curScreenRotation == 180) {
+                recorder.setOrientationHint(90);
+            }
+            if (curScreenRotation == 270) {
+                recorder.setOrientationHint(0);
+            }
+        }
+        mCamera.setParameters(mParameter);
+        if (Build.VERSION.SDK_INT <= 14) {
+            try {
+                mCamera.stopPreview();
+                mCamera.startPreview();
+            } catch (Exception e) {
+                Log.e(TAG, "takePicture: sdk < 14 need to process: stop and start preview.", e);
+            }
+        }
     }
 
     private boolean prepareMediaRecorder() {
@@ -57,9 +95,10 @@ public class CameraView extends CameraBase {
         recorder.setCamera(getmCamera());
         recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-        recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
         recorder.setMaxDuration(10 * 1000);
-        recorder.setOrientationHint(camFacing == FACING_BACK ? 90 : 270);
+        recorder.setMaxFileSize(1024 * 1024 * 5);
+//        recorder.setOrientationHint(camFacing == FACING_BACK ? 90 : 270);
         recorder.setOutputFile(getOutputMediaFilePath(MEDIA_TYPE_VIDEO));
         recorder.setPreviewDisplay(this.getHolder().getSurface());
 
@@ -111,35 +150,9 @@ public class CameraView extends CameraBase {
     }
 
     private String getOutputMediaFilePath(int mediaType) {
-        videoFile = getOutputMediaFile(mediaType);
+        videoFile = CameraUtil.getOutputMediaFile(mContext, mediaType);
         curVideoFilePath = videoFile == null ? "" : videoFile.toString();
         return curVideoFilePath;
-    }
-
-    private File getOutputMediaFile(int mediaType) {
-
-        File mediaStoreDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                getResources().getString(R.string.app_name));
-
-        if (!mediaStoreDir.exists()) {
-            if (!mediaStoreDir.mkdir()) {
-                Log.e(TAG, "getOutputMediaFile: make dir failed! ");
-                return null;
-            }
-        }
-
-        File mediaFile;
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        if (mediaType == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStoreDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
-        } else if (mediaType == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStoreDir.getPath() + File.separator + "VID_" + timeStamp + ".mp4");
-        } else {
-            return null;
-        }
-
-        return mediaFile;
     }
 
 }

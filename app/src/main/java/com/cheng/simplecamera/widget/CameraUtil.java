@@ -1,8 +1,21 @@
 package com.cheng.simplecamera.widget;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.os.Environment;
+import android.util.Log;
 import android.util.SparseIntArray;
+
+import com.cheng.simplecamera.R;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  *
@@ -10,6 +23,7 @@ import android.util.SparseIntArray;
  */
 
 public class CameraUtil {
+    private static final String TAG = "CameraUtil";
 
     private static SparseIntArray array = new SparseIntArray();
     private static int[] degrees = new int[]{0, 90, 180, 270};
@@ -67,5 +81,43 @@ public class CameraUtil {
         matrix.postScale(-1, 1); // 镜像水平翻转
 
         return Bitmap.createBitmap(bmp, 0, 0, w, h, matrix, true);
+    }
+
+    static File getOutputMediaFile(Context context, int mediaType) {
+
+        File mediaStoreDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                context.getResources().getString(R.string.app_name));
+
+        if (!mediaStoreDir.exists()) {
+            if (!mediaStoreDir.mkdir()) {
+                Log.e(TAG, "getOutputMediaFile: make dir failed! ");
+                return null;
+            }
+        }
+
+        File mediaFile;
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        if (mediaType == CameraView.MEDIA_TYPE_IMAGE) {
+            mediaFile = new File(mediaStoreDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+        } else if (mediaType == CameraView.MEDIA_TYPE_VIDEO) {
+            mediaFile = new File(mediaStoreDir.getPath() + File.separator + "VID_" + timeStamp + ".mp4");
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
+
+    public static void savePicture(Context context, Bitmap bitmap) {
+        try {
+            FileOutputStream fos = context.openFileOutput("new_pic_" + System.currentTimeMillis() + ".jpg", Context.MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

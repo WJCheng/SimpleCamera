@@ -184,7 +184,7 @@ public class CameraBase extends SurfaceView implements CameraInteface {
         }
     }
 
-    private void calcPictureRotation() {
+    protected void calcPictureRotation() {
         if (camFacing == FACING_BACK) {
             Log.i(TAG, "calcPictureRotation: back orientation = " + mCameraInfo.orientation);//90
             if (curScreenRotation == 0) {

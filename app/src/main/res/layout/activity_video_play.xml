@@ -3,12 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="abc.cheng.vediodemo.VideoPlayActivity">
+    android:background="@android:color/black"
+    tools:context="com.cheng.simplecamera.VideoPlayActivity">
 
     <VideoView
         android:id="@+id/video_view"
+        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/play"
