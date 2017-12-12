@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SimpleCamera</string>
+    <string name="camera_prompt">Tap to take photo, hold to record video</string>
 </resources>

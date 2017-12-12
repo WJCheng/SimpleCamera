@@ -38,9 +38,8 @@ public class CameraView extends CameraBase {
     }
 
     public void startRecordVideo() {
-        setPromptVisibility(false);
         countDownTask = new CountDownTask(mProgressBar);
-        countDownTask.execute(MAX_VIDEO_LENGTH);
+        countDownTask.execute(MAX_VIDEO_LENGTH_SECOND);
 
         recorder = new MediaRecorder();
         calcVideoRotation();
@@ -119,7 +118,6 @@ public class CameraView extends CameraBase {
      * reason: stop too fast after start, and the MediaRecorder haven't receive data yet.
      */
     public void stopRecordVideo() {
-        setPromptVisibility(true);
         countDownTask.cancel(true);
         mProgressBar.setVisibility(INVISIBLE);
 

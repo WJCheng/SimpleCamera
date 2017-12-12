@@ -16,7 +16,7 @@ import android.widget.TextView;
 import java.io.IOException;
 
 /**
- * Camera Basic function like take photo
+ * Camera with Basic function like take photo
  * Created by cheng on 2017/12/5.
  */
 public class CameraBase extends SurfaceView implements CameraInteface {
@@ -26,7 +26,7 @@ public class CameraBase extends SurfaceView implements CameraInteface {
     public static final int MEDIA_TYPE_VIDEO = 2;
 
     public static final int INVALID_CAMERA_ID = -1;
-    public static final int MAX_VIDEO_LENGTH = 10;
+    public static final int MAX_VIDEO_LENGTH_SECOND = 10;
 
     public static final int FACING_BACK = Camera.CameraInfo.CAMERA_FACING_BACK;
     public static final int FACING_FRONT = Camera.CameraInfo.CAMERA_FACING_FRONT;
@@ -45,7 +45,6 @@ public class CameraBase extends SurfaceView implements CameraInteface {
     private SurfaceHolder mSurfaceHolder;
     private OrientationEventListener orientationEventListener;
 
-    protected TextView mTvPrompt;
     protected ProgressBar mProgressBar;
 
     public CameraBase(Context context) {
@@ -78,7 +77,9 @@ public class CameraBase extends SurfaceView implements CameraInteface {
             @Override
             public void onOrientationChanged(int orientation) {
                 //here orientation could be 0 ~ 360, curScreenRotation could only be 0, 90, 180, 270.
+                //0, 90, 180, 270 represent bottom, right, top, left edge of the screen in natural orientation
                 curScreenRotation = CameraUtil.getCurrentOrientation(orientation);
+                Log.i(TAG, "onOrientationChanged: curScreenRotation = " + curScreenRotation);
             }
         };
     }
@@ -114,7 +115,6 @@ public class CameraBase extends SurfaceView implements CameraInteface {
         }
     }
 
-    //use for switching through back and front camera.
     public void startCamera() {
         if (mSurfaceHolder != null) {
             try {
@@ -170,8 +170,6 @@ public class CameraBase extends SurfaceView implements CameraInteface {
                             public void onPictureTaken(byte[] data, Camera camera) {
                                 photoCallback.onPhotoToken(data, camera);
                                 camera.autoFocus(null);//remove callback on each time the camera finish auto focus,
-                                camera.startPreview();
-                                setPromptVisibility(true);
                             }
                         });
                     } catch (Exception e) {
@@ -184,6 +182,10 @@ public class CameraBase extends SurfaceView implements CameraInteface {
         }
     }
 
+    /**
+     * for mi note 2 the camera's view is the same as the screen in 270 degree,
+     * which means the status bar on the left, navigation bar on the right
+     */
     protected void calcPictureRotation() {
         if (camFacing == FACING_BACK) {
             Log.i(TAG, "calcPictureRotation: back orientation = " + mCameraInfo.orientation);//90
@@ -310,18 +312,19 @@ public class CameraBase extends SurfaceView implements CameraInteface {
         return camFacing;
     }
 
-    public void setPromptText(TextView view){
-        this.mTvPrompt = view;
-    }
-
-    public void setPromptVisibility(boolean isShow){
-        if (mTvPrompt != null){
-            mTvPrompt.setVisibility(isShow ? VISIBLE : INVISIBLE);
-        }
-    }
-
     public void setPromptProgressBar(ProgressBar pb){
         this.mProgressBar = pb;
+    }
+
+    public void startPreview(){
+        if (mCamera != null){
+            mCamera.startPreview();
+        }
+    }
+    public void stopPreview(){
+        if (mCamera != null){
+            mCamera.stopPreview();
+        }
     }
 
     @Override

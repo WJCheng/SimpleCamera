@@ -20,19 +20,20 @@ public class CountDownTask extends AsyncTask<Integer, Integer, Void> {
     protected void onPreExecute() {
         super.onPreExecute();
         mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.setMax(1000);
+        mProgressBar.setProgress(mProgressBar.getMax());
     }
 
     @Override
     protected Void doInBackground(Integer... integers) {
-        int max = integers[0] * 10;
-        int count = 0;
-        while(count <= max){
+        int count = integers[0] * 100;
+        while(count >= 0){
             try {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            count++;
+            count--;
             publishProgress(count);
         }
         return null;
@@ -47,6 +48,6 @@ public class CountDownTask extends AsyncTask<Integer, Integer, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 }

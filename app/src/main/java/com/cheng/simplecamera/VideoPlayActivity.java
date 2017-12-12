@@ -1,5 +1,7 @@
 package com.cheng.simplecamera;
 
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -16,21 +18,34 @@ public class VideoPlayActivity extends AppCompatActivity {
     private VideoView mVideoView;
     private Button mBtnPlay;
     private ImageView mIvUse;
+    private String mPath;
+    private ImageView mThumbnil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
+        mPath = getIntent().getStringExtra("path");
 
         initLayout();
         initListener();
 
         initVideoPlayer();
+        getThumbnail();
+    }
+
+    private void getThumbnail() {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(mPath);
+
+        Bitmap bitmap = retriever.getFrameAtTime();
+        if (bitmap != null){
+            mThumbnil.setImageBitmap(bitmap);
+        }
     }
 
     private void initVideoPlayer() {
-        String path = getIntent().getStringExtra("path");
-        mVideoView.setVideoPath(path);
+        mVideoView.setVideoPath(mPath);
         mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -71,5 +86,6 @@ public class VideoPlayActivity extends AppCompatActivity {
         mVideoView = findViewById(R.id.video_view);
         mBtnPlay = findViewById(R.id.play);
         mIvUse = findViewById(R.id.use);
+        mThumbnil = findViewById(R.id.thumbnail);
     }
 }

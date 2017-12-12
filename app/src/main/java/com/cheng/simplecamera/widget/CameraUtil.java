@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- *
  * Created by cheng on 2017/12/6.
  */
 
@@ -39,10 +38,9 @@ public class CameraUtil {
 //        array.append(180, 270);
 //        array.append(270, 180);
 //    }
-
-    static int getCurrentOrientation(int orientation){
+    static int getCurrentOrientation(int orientation) {
         int currentOrientation = 0;
-        if (orientation >= 315){
+        if (orientation >= 315) {
             currentOrientation = 0;
         } else {
             for (int degree : degrees) {
@@ -70,6 +68,7 @@ public class CameraUtil {
 
     /**
      * usage: Mirror image flipping for Front Camera.
+     *
      * @param bmp raw bitmap
      * @return bitmap after flipping
      */
@@ -109,15 +108,40 @@ public class CameraUtil {
         return mediaFile;
     }
 
-    public static void savePicture(Context context, Bitmap bitmap) {
-        try {
-            FileOutputStream fos = context.openFileOutput("new_pic_" + System.currentTimeMillis() + ".jpg", Context.MODE_PRIVATE);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+//    public static String _savePicture(Context context, Bitmap bitmap) {
+////        String fileName;
+//        File imageFile = getOutputMediaFile(context, CameraView.MEDIA_TYPE_IMAGE);
+//        try {
+////            fileName = "IMG_" + System.currentTimeMillis() + ".jpg";
+////            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+////            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//            if (imageFile != null) {
+//                FileOutputStream fos = new FileOutputStream(imageFile);
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                fos.close();
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//            return null;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//        return imageFile.getAbsolutePath();
+//    }
+
+    public static File savePicture(Context context, Bitmap bitmap) {
+        File imageFile = getOutputMediaFile(context, CameraView.MEDIA_TYPE_IMAGE);
+        if (imageFile != null) {
+            try {
+                FileOutputStream fos = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.close();
+            } catch (Exception e) {
+                Log.e(TAG, "savePicture: ", e);
+                return null;
+            }
         }
+        return imageFile;
     }
 }

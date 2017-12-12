@@ -1,29 +1,20 @@
 package com.cheng.simplecamera;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Camera;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.cheng.simplecamera.base.FullScreenActivity;
-import com.cheng.simplecamera.widget.CameraButton;
-import com.cheng.simplecamera.widget.CameraInteface;
-import com.cheng.simplecamera.widget.CameraUtil;
-import com.cheng.simplecamera.widget.CameraView;
+import java.io.File;
 
-public class MainActivity extends FullScreenActivity {
-    private static final String TAG = "MainActivity";
+public class MainActivity extends AppCompatActivity {
 
-    private CameraView mCameraView;
-    private ImageView mIvShowImage;
-    private CameraButton mCameraButton;
-    private ImageView mIvSwitchFacing;
-    private TextView mTvPrompt;
-    private ProgressBar mProgressBar;
+    private static final int REQUEST_PHOTO = 1000;
+    private ImageView mIvImage;
+    private Button mBtnTake;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,35 +26,28 @@ public class MainActivity extends FullScreenActivity {
     }
 
     private void initLayout() {
-        mCameraView = findViewById(R.id.camera);
-        mIvShowImage = findViewById(R.id.image);
-        mIvSwitchFacing = findViewById(R.id.face);
-        mCameraButton = findViewById(R.id.camera_button);
-        mTvPrompt = findViewById(R.id.prompt);
-        mProgressBar = findViewById(R.id.progressBar);
+        mIvImage = findViewById(R.id.image);
+        mBtnTake = findViewById(R.id.take);
     }
 
     private void initListener() {
-        mIvSwitchFacing.setOnClickListener(new View.OnClickListener() {
+        mBtnTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCameraView != null) {
-                    mCameraView.switchCamera();
-                }
-            }
-        });
-
-        mCameraButton.bindCameraView(mCameraView);
-        mCameraView.setPromptText(mTvPrompt);
-        mCameraView.setPromptProgressBar(mProgressBar);
-        mCameraButton.setPhotoCallback(new CameraInteface.PhotoCallback() {
-            @Override
-            public void onPhotoToken(byte[] data, Camera camera) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(data,  0, data.length);
-                mIvShowImage.setImageBitmap(bitmap);
-                CameraUtil.savePicture(MainActivity.this, bitmap);
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                startActivityForResult(intent, REQUEST_PHOTO);
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_PHOTO) {
+                File imageFile = (File) data.getSerializableExtra("image");
+                mIvImage.setImageURI(Uri.fromFile(imageFile));
+            }
+        }
+    }
 }
