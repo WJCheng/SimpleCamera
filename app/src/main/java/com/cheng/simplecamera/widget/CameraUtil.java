@@ -52,20 +52,6 @@ public class CameraUtil {
         return currentOrientation;
     }
 
-//    public static int getPictureOrientation(int orientation){
-//        int currentOrientation = 0;
-//        if (orientation >= 315){
-//            currentOrientation = 0;
-//        } else {
-//            for (int degree : degrees) {
-//                if (Math.abs(orientation - degree) <= 45) {
-//                    currentOrientation = degree;
-//                }
-//            }
-//        }
-//        return array.get(currentOrientation);
-//    }
-
     /**
      * usage: Mirror image flipping for Front Camera.
      *
@@ -108,38 +94,25 @@ public class CameraUtil {
         return mediaFile;
     }
 
-//    public static String _savePicture(Context context, Bitmap bitmap) {
-////        String fileName;
-//        File imageFile = getOutputMediaFile(context, CameraView.MEDIA_TYPE_IMAGE);
-//        try {
-////            fileName = "IMG_" + System.currentTimeMillis() + ".jpg";
-////            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-////            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//            if (imageFile != null) {
-//                FileOutputStream fos = new FileOutputStream(imageFile);
-//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//                fos.close();
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//            return null;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//        return imageFile.getAbsolutePath();
-//    }
-
-    public static File savePicture(Context context, Bitmap bitmap) {
+    public static File savePhoto(Context context, Bitmap bitmap) {
         File imageFile = getOutputMediaFile(context, CameraView.MEDIA_TYPE_IMAGE);
+        FileOutputStream fos = null;
         if (imageFile != null) {
             try {
-                FileOutputStream fos = new FileOutputStream(imageFile);
+                fos = new FileOutputStream(imageFile);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
             } catch (Exception e) {
-                Log.e(TAG, "savePicture: ", e);
+                Log.e(TAG, "savePhoto: ", e);
                 return null;
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return imageFile;

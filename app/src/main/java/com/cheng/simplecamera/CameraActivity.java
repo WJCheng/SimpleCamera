@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -16,45 +15,50 @@ import com.cheng.simplecamera.widget.CameraInteface;
 import com.cheng.simplecamera.widget.CameraUtil;
 import com.cheng.simplecamera.widget.CameraView;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+
 import java.io.File;
 
+@EActivity(R.layout.activity_camera)
 public class CameraActivity extends FullScreenActivity {
     private static final String TAG = "CameraActivity";
 
-    private CameraView mCameraView;
-    private ImageView mIvShowImage;
-    private CameraButton mCameraButton;
-    private ImageView mIvSwitchFacing;
-    private ImageView mIvClose;
-    private TextView mTvPrompt;
-    private ProgressBar mProgressBar;
-    private ImageView mIvRetake;
-    private ImageView mIvUse;
+    @ViewById(R.id.camera)
+    CameraView mCameraView;
+
+    @ViewById(R.id.image)
+    ImageView mIvShowImage;
+
+    @ViewById(R.id.camera_button)
+    CameraButton mCameraButton;
+
+    @ViewById(R.id.face)
+    ImageView mIvSwitchFacing;
+
+    @ViewById(R.id.close)
+    ImageView mIvClose;
+
+    @ViewById(R.id.prompt)
+    TextView mTvPrompt;
+
+    @ViewById(R.id.progressBar)
+    ProgressBar mProgressBar;
+
+    @ViewById(R.id.retake)
+    ImageView mIvRetake;
+
+    @ViewById(R.id.use)
+    ImageView mIvUse;
 
     private Bitmap mBitmap;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
-
-        initLayout();
-        initListener();
-    }
-
-    private void initLayout() {
-        mCameraView = findViewById(R.id.camera);
-        mIvShowImage = findViewById(R.id.image);
-        mIvSwitchFacing = findViewById(R.id.face);
-        mIvClose = findViewById(R.id.close);
-        mCameraButton = findViewById(R.id.camera_button);
-        mTvPrompt = findViewById(R.id.prompt);
-        mProgressBar = findViewById(R.id.progressBar);
-        mIvRetake = findViewById(R.id.retake);
-        mIvUse = findViewById(R.id.use);
-
+    @AfterViews
+    void afterView() {
         mIvRetake.setVisibility(View.INVISIBLE);
         mIvUse.setVisibility(View.INVISIBLE);
+        initListener();
     }
 
     private void initListener() {
@@ -76,7 +80,7 @@ public class CameraActivity extends FullScreenActivity {
             @Override
             public void onClick(View v) {
                 if (mBitmap != null) {
-                    File imageFile = CameraUtil.savePicture(CameraActivity.this, mBitmap);
+                    File imageFile = CameraUtil.savePhoto(CameraActivity.this, mBitmap);
                     setResult(RESULT_OK, new Intent().putExtra("image", imageFile));
                     CameraActivity.this.finish();
                 }

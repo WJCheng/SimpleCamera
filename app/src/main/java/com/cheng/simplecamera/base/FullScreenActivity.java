@@ -13,7 +13,7 @@ import android.view.WindowManager;
  */
 
 @SuppressLint("Registered")
-public class FullScreenActivity extends AppCompatActivity {
+public class FullScreenActivity extends BaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,8 +28,6 @@ public class FullScreenActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }

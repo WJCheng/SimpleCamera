@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.cheng.simplecamera.VideoPlayActivity;
+import com.cheng.simplecamera.VideoPlayActivity_;
 
 import java.io.File;
 import java.io.IOException;
@@ -132,7 +132,7 @@ public class CameraView extends CameraBase {
         }
 
         if (videoFile.exists()) {//record video successfully.
-            Intent intent = new Intent(mContext, VideoPlayActivity.class);
+            Intent intent = VideoPlayActivity_.intent(mContext).get();
             intent.putExtra("path", curVideoFilePath);
             mContext.startActivity(intent);
         }

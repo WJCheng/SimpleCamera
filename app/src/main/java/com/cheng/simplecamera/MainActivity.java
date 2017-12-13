@@ -8,33 +8,32 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+
 import java.io.File;
 
+@EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_PHOTO = 1000;
-    private ImageView mIvImage;
-    private Button mBtnTake;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    @ViewById(R.id.image)
+    ImageView mIvImage;
+    @ViewById(R.id.take)
+    Button mBtnTake;
 
-        initLayout();
+    @AfterViews
+    void afterView() {
         initListener();
-    }
-
-    private void initLayout() {
-        mIvImage = findViewById(R.id.image);
-        mBtnTake = findViewById(R.id.take);
     }
 
     private void initListener() {
         mBtnTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                Intent intent = CameraActivity_.intent(MainActivity.this).get();
                 startActivityForResult(intent, REQUEST_PHOTO);
             }
         });
