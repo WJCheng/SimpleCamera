@@ -11,7 +11,6 @@ import android.view.OrientationEventListener;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.io.IOException;
 

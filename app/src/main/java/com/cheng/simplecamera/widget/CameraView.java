@@ -1,5 +1,6 @@
 package com.cheng.simplecamera.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.CamcorderProfile;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cheng.simplecamera.VideoPlayActivity_;
+import com.cheng.simplecamera.common.ConstUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +98,7 @@ public class CameraView extends CameraBase {
         recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
         recorder.setMaxDuration(10 * 1000);
-        recorder.setMaxFileSize(1024 * 1024 * 5);
+        recorder.setMaxFileSize(1024 * 1024 * 10);
 //        recorder.setOrientationHint(camFacing == FACING_BACK ? 90 : 270);
         recorder.setOutputFile(getOutputMediaFilePath(MEDIA_TYPE_VIDEO));
         recorder.setPreviewDisplay(this.getHolder().getSurface());
@@ -134,7 +136,7 @@ public class CameraView extends CameraBase {
         if (videoFile.exists()) {//record video successfully.
             Intent intent = VideoPlayActivity_.intent(mContext).get();
             intent.putExtra("path", curVideoFilePath);
-            mContext.startActivity(intent);
+            ((Activity)mContext).startActivityForResult(intent, ConstUtil.SEND_VIDEO_FILE);
         }
     }
 

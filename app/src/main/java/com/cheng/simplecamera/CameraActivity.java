@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.cheng.simplecamera.base.FullScreenActivity;
+import com.cheng.simplecamera.common.ConstUtil;
 import com.cheng.simplecamera.widget.CameraButton;
 import com.cheng.simplecamera.widget.CameraInteface;
 import com.cheng.simplecamera.widget.CameraUtil;
@@ -61,6 +63,18 @@ public class CameraActivity extends FullScreenActivity {
         initListener();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mCameraView.releaseCamera();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mCameraView.openCamera(mCameraView.getCurrentFacing());
+    }
+
     private void initListener() {
         mIvSwitchFacing.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +95,7 @@ public class CameraActivity extends FullScreenActivity {
             public void onClick(View v) {
                 if (mBitmap != null) {
                     File imageFile = CameraUtil.savePhoto(CameraActivity.this, mBitmap);
-                    setResult(RESULT_OK, new Intent().putExtra("image", imageFile));
+                    setResult(ConstUtil.RESULT_CAM_IMAGE, new Intent().putExtra("image", imageFile));
                     CameraActivity.this.finish();
                 }
             }
@@ -127,4 +141,16 @@ public class CameraActivity extends FullScreenActivity {
         mIvSwitchFacing.setVisibility(takeVisibility);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == ConstUtil.SEND_VIDEO_FILE) {
+                String path = data.getStringExtra("compressedPath");
+                Log.i(TAG, "onActivityResult: " + path);
+                setResult(ConstUtil.RESULT_CAM_VIDEO, data);
+                finish();
+            }
+        }
+    }
 }
